@@ -1,0 +1,12 @@
+*.aux
+*.fdb_latexmk
+*.fls
+*.out
+*.gz
+*.toc
+*.log
+*.lof
+*.dat
+
+__pycache__
+.venv
