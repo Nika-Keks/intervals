@@ -6,7 +6,8 @@
 *.toc
 *.log
 *.lof
-*.dat
+# *.dat
+*.ipynb
 
 __pycache__
 .venv

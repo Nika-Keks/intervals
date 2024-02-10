@@ -1,0 +1,120 @@
+\documentclass[a4paper,12pt]{article}
+
+\usepackage[hidelinks]{hyperref}
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{shorttoc}
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english, russian]{babel}
+\usepackage{xcolor}
+\usepackage{graphicx}
+\usepackage{float}
+\graphicspath{{./../}}
+
+\definecolor{linkcolor}{HTML}{000000}
+\definecolor{urlcolor}{HTML}{0085FF}
+\hypersetup{pdfstartview=FitH,  linkcolor=linkcolor,urlcolor=urlcolor, colorlinks=true}
+
+\DeclarePairedDelimiter{\floor}{\lfloor}{\rfloor}
+
+\renewcommand*\contentsname{Содержание}
+
+\newcommand{\plot}[3]{
+    \begin{figure}[H]
+        \begin{center}
+            \includegraphics[scale=0.6]{./doc/img/#1.png}
+            \caption{#2}
+            \label{#3}
+        \end{center}
+    \end{figure}
+}
+
+\begin{document}
+    \include{title}
+    \newpage
+
+    \tableofcontents
+    \listoffigures
+    \newpage
+
+    \section{Постановка задачи}
+    \section{Теория}
+    \subsection{Точечная линейная регрессия}
+    \quad Рассматривается задача восстановления зависимости для выборки
+    $ (X, \textbf(Y))$, $ X = \{x_i\}_{i=1}^{n}, \textbf{Y} = \{\textbf{y}_i\}_{i=1}^{n} $,
+    $ x_i $ - точечный, $ \textbf{y}_i $ - интервальный.
+    Пусть искомая модель задана в классе линейных функций
+
+    \label{e:model}
+    \begin{equation}
+        y = \beta_0 + \beta_1 x
+    \end{equation}
+
+    Поставим задачу оптимизации \ref{e:task} для нахождения точечных оценок
+    параметров $ \beta_0, \beta_1 $.
+
+    \label{e:task}
+    \begin{equation}
+        \begin{gathered}
+            \sum_{i = 1}^{m}w_{i} \to \min \\
+            \text{mid}\textbf{y}_{i} - w_{i} \cdot \text{rad}\textbf{y}_{i} \leq X\beta \leq \text{mid}\textbf{y}_{i} + w_{i} \cdot \text{rad}\textbf{y}_{i} \\
+            w_{i} \geq 0, i = 1, ..., m \\
+            w, \beta - ?
+        \end{gathered}
+    \end{equation}
+    
+    Задачу \ref{e:task} можно решить методами линейного программирования.
+
+    \subsection{Информационное множество}
+    \quad \textsl{Информационным множеством} задачи восстановления зависимости
+    будем называть множество значений всех параметров зависимости,
+    совместных с данными в каком-то смысле. 
+
+    \textsl{Коридором совместных зависимостей} задачи восстановления зависимости
+    называется многозначное множество отображений $ \Upsilon $, сопоставляющее
+    каждому значению аргумента $ x $ множество
+    
+    \begin{equation}
+        \Upsilon(x) = \bigcup_{\beta \in \Omega} f(x, \beta)
+    \end{equation}
+
+    , где $ \Omega $ - информационное множество, $ x $ - вектор переменных, $ \beta $ - вектор оцениваемых параметров. 
+
+    Информационное множество может быть построено как пересечение полос, заданных
+    
+    \begin{equation}
+        \underline{\textbf{y}_i} \leq \beta_0 + \beta_1 x_{i1} + ... + \beta_m x_{im} \leq \overline{\textbf{y}_i}
+    \end{equation}
+    , где $ i = \overline{1, n} \textbf{y}_i \in \textbf{Y}, x_i \in X $, $ X $ - точечная выборка переменных,
+    $ \textbf{Y} $ - интервальная выборка откликов.
+
+    \section{Результаты}
+    \quad Данные были взяты из таблицы S1 приложенной к работе Roederer, Ian U., et al. "Element abundance patterns in stars indicate fission of nuclei heavier than uranium." Science 382.6675 (2023)
+
+    В ней представлены определенные значения для различных элементов и их стандартные отклонения.
+    В качестве $x$ выступает значение $[Eu/Fe]$, а в качестве $y$ $X \pm eX,\ X \in \{Se, Sr, Y, Nb, Mo\}$.
+    Эти данные соответсвуют части данных с \textit{рис Fig. 2. (A) Abundance ratios of groups of elements that do or do not correlate with [Eu/Fe]. }
+    Остальные же даные в материалах статьи представлены рядом ссылок, и автоматизировать их сбор не представляется возможным.
+
+    Далее рассмотрим сами данные и получившие результаты.
+
+    \plot{Se Sr Y Nb Mo}{
+        Синим цветом представлены значения для различных элементов с их стандартными отклонениями.
+        Оранжевым цветом показаны результаты регрессии.
+    }{linreg}
+
+    
+    Полученны $(\beta_1, \beta_2) = (-0.0, -0.9)$. Полученные результаты отличаются от результатов в статье из-за 
+    отстутствия сдвига, однако общий вывод будет одинаков из-за $\beta_1$ близкого к нулю.
+
+    Также стоит отметить что информационное множество пустое, так как настоящая зависимость отличается от линейной
+    и сами интвервалы представляют собой лишь стандартное отклонение от среднего.
+
+    \section{Обсуждение}
+    \quad Можно сказать, что полученные результаты соответствуют результатам из исходной работы 
+    с учетом отсутствия сдвига и меньшего количества данных. Общий вывод об отсутствии линейной 
+    зависимости между значениями сохраняется.
+
+\end{document}
