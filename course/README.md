@@ -35,6 +35,11 @@
 
 # Постановка задачи
 
+Решить задачу восстановления зависимости на экспериментальных данных.
+Данные взять из материалов (таблица) статьи Roederer, Ian U., et al.
+\"Element abundance patterns in stars indicate fission of nuclei heavier
+than uranium.\" Science 382.6675 (2023).
+
 # Теория
 
 ## Точечная линейная регрессия
