@@ -16,6 +16,6 @@ readme:
 	cd $(lab)/doc && pandoc -s -f latex -t markdown $(lab).tex -o ./../README.md
 
 report:
-	cd $(lab)/doc && pdflatex $(lab).tex > /dev/null
+	cd $(lab)/doc && pdflatex $(lab).tex
 
 

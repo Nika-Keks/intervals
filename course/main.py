@@ -93,6 +93,15 @@ def plot_linprog(x: np.array,
     plt.savefig(os.path.join(imgpath, f"{title}.png"))
     plt.close()
 
+def infoset_bbox(xy: tuple):
+    eges = lambda i: np.repeat(xy[i], 2)
+    close = lambda t: np.r_[t, t[0]]
+
+    x = close(eges(0))
+    y = close(np.roll(eges(1), 1))
+
+    return x, y
+
 def plot_infoset(x: np.array, 
                  y: np.array, 
                  y_err: np.array, 
@@ -112,12 +121,28 @@ def plot_infoset(x: np.array,
     infoset = poligons[0]
     for poligon in poligons[1:]:
         infoset = infoset.intersection(poligon)
+    if infoset.is_empty:
+        return None, None
+    
+    minmax = lambda t: np.r_[np.min(t), np.max(t)]
+    xy = infoset.exterior.xy
+    mmxy = minmax(xy[0]), minmax(xy[1])
+    bbox = infoset_bbox(mmxy)
     
     os.makedirs(imgpath, exist_ok=True)
-    for poligon in poligons:
-        plt.plot(*poligon.exterior.xy)
+    # for poligon in poligons:
+    #     plt.plot(*poligon.exterior.xy)
+    plt.plot(*xy, label="infoset borders")
+    plt.scatter(np.mean(mmxy[0]), np.mean(mmxy[1]), label="infoset mean point")
+    plt.plot(*bbox, linestyle="--", label="infoset bbox")
+    plt.xlabel(r"$\beta_1$")
+    plt.ylabel(r"$\beta_2$")
+    plt.title(f"{title} infoset")
+    plt.legend()
     plt.savefig(os.path.join(imgpath, f"{title} infoset.png"))
     plt.close()
+
+    return mmxy
 
 def main():
     data = read_data("data/science.adf1341_sm_data-s1.v2.csv")
@@ -127,10 +152,18 @@ def main():
         b1, b2 = out.x[:2]
         plot_infoset(x, y, y_err, b1, b2, " ".join(group))
         plot_linprog(x, y, y_err, b1, b2, " ".join(group))
-
+        
         print(group)
         print(f"(\\beta_1, \\beta_2) = ({b1:.1f}, {b2:.1f})")
 
+        plot_linprog(x, y, 3*y_err, b1, b2, " ".join(group) + " 3sig")
+        ib1, ib2 = plot_infoset(x, y, 3*y_err, b1, b2, " ".join(group) + " 3sig")
+        out = linreg(x, y, 3*y_err)
+        b1, b2 = out.x[:2]
+
+        print(f"(\\beta_1, \\beta_2) = ({b1:.1f}, {b2:.1f})")
+        print(f"(\\beta_1, \\beta_2) = ({ib1}, {ib2})")
+        print(f"(\\beta_1, \\beta_2) = ({np.mean(ib1):.3f}, {np.mean(ib2):.3f})")
         
 
 if __name__ == '__main__':
